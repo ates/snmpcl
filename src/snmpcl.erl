@@ -34,5 +34,5 @@ walk(Version, Address, Community, Oid) ->
             [{_, Oid, Type, Value, _}] = Result,
             {Oid, Type, Value};
         {error, Reason} ->
-            io:format("Can't send request to ~p due to ~p~n", [Address, Reason])
+            io:format("Can't send request to ~s due to ~p~n", [Address, Reason])
     end.
