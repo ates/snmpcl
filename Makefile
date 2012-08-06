@@ -1,10 +1,7 @@
-ERL=erl
-
-all: compile
+REBAR = ./rebar
 
 compile:
-	test -d ebin || mkdir ebin
-	$(ERL) -make
+	@$(REBAR) compile
 
 clean:
-	rm -rf ebin erl_crash.dump manager.conf snmpm_config_db
+	@$(REBAR) clean

@@ -2,8 +2,10 @@
 
 -behaviour(application).
 
+%% application callbacks
 -export([start/2, stop/1]).
 
+%% API
 -export([walk/2, walk/3, walk/4]).
 
 start(normal, _StartArgs) ->
@@ -34,5 +36,6 @@ walk(Version, Address, Community, Oid) ->
             [{_, Oid, Type, Value, _}] = Result,
             {Oid, Type, Value};
         {error, Reason} ->
-            io:format("Can't send request to ~s due to ~p~n", [Address, Reason])
+            error_logger:error_msg("Can't send request to ~s due to ~p~n",
+                [Address, Reason])
     end.
