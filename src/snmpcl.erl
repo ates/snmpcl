@@ -22,9 +22,19 @@ walk(Address, Community, Oid) ->
     walk(v2, Address, Community, Oid).
 
 walk(Version, Address, Community, Oid) ->
-    Options = [{engine_id, "the engine"}, {address, Address},
-               {community, Community},
-               {version, Version}],
+    Options =
+	[{engine_id, "the engine"},
+	 {community, Community},
+	 {version, Version}
+	| case Address of
+	      {Host, Port} ->
+		  [{address, Host},
+		   {port, Port}
+		  ];
+	      Host ->
+		  [{address, Host}]
+	  end
+	],
     case snmpm:which_agents(snmpcl_user) of
         [] -> ok;
         _ ->
