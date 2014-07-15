@@ -17,6 +17,9 @@ stop(_State) -> ok.
 
 walk(Address, Oid) ->
     walk(v2, Address, "public", Oid).
+    
+b_walk(Hosts,Community,Oid) ->
+	[ walk(H, Community, Oid) || H <- Hosts ].
 
 walk(Address, Community, Oid) ->
     walk(v2, Address, Community, Oid).
