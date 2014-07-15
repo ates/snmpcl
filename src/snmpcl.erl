@@ -6,7 +6,7 @@
 -export([start/2, stop/1]).
 
 %% API
--export([walk/2, walk/3, walk/4]).
+-export([walk/2, walk/3, walk/4, b_walk/3]).
 
 start(normal, _StartArgs) ->
     snmpm:start(),
@@ -18,7 +18,7 @@ stop(_State) -> ok.
 walk(Address, Oid) ->
     walk(v2, Address, "public", Oid).
     
-b_walk(Hosts,Community,Oid) ->
+b_walk(Hosts, Community, Oid) ->
 	[ walk(H, Community, Oid) || H <- Hosts ].
 
 walk(Address, Community, Oid) ->
