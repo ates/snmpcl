@@ -2,3 +2,4 @@ ebin
 .*swp
 manager.conf
 snmpm_config_db
+_build

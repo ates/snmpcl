@@ -4,16 +4,13 @@ SNMPcl: Simple SNMP client like snmpwalk
 Compile & usage
 ---------------
 
-    $ cd snmpcl
-    $ make
-    $ erl -pa ebin
-    Erlang R14A (erts-5.8) [source] [64-bit] [smp:2:2] [rq:2] [async-threads:0] [kernel-poll:false]
+    $ rebar3 shell
+    Erlang/OTP 20 [erts-9.1] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:0] [hipe] [kernel-poll:false]
 
-    Eshell V5.8  (abort with ^G)
-    1> application:start(snmpcl).
-    ok
-    2> snmpcl:walk("10.10.0.101", [1,3,6,1,2,1,1,5,0]).
-    {[1,3,6,1,2,1,1,5,0],'OCTET STRING',"des3528"}
+    Eshell V9.1  (abort with ^G)
+    1> snmpcl:walk({127,0,0,1}, [1,3,6,1,2,1,1,5,0]).
+    {[1,3,6,1,2,1,1,5,0],'OCTET STRING',"myhost"}
+
 
 License
 -------

@@ -1,8 +1,6 @@
 {application, snmpcl, [
     {description, "Simple SNMP client"},
-    {vsn, "0.1"},
-    {modules, []},
-    {registered, []},
-    {applications, [kernel, stdlib]},
+    {vsn, "1.0.0"},
+    {applications, [kernel, stdlib, snmp]},
     {mod, {snmpcl, []}}
 ]}.

@@ -6,11 +6,14 @@
 -export([start/2, stop/1]).
 
 %% API
--export([walk/2, walk/3, walk/4, b_walk/3]).
+-export([walk/2]).
+-export([walk/3]).
+-export([walk/4]).
+-export([b_walk/3]).
 
-start(normal, _StartArgs) ->
+start(_Type, _Args) ->
     snmpm:start(),
-    snmpm:register_user(snmpcl_user, snmpcl_user, undefined),
+    snmpm:register_user(snmpcl_user, snmpcl_user, []),
     {ok, self()}.
 
 stop(_State) -> ok.
@@ -25,19 +28,19 @@ walk(Address, Community, Oid) ->
     walk(v2, Address, Community, Oid).
 
 walk(Version, Address, Community, Oid) ->
-    Options =
-	[{engine_id, "the engine"},
-	 {community, Community},
-	 {version, Version}
-	| case Address of
-	      {Host, Port} ->
-		  [{address, Host},
-		   {port, Port}
-		  ];
-	      Host ->
-		  [{address, Host}]
-	  end
-	],
+    Options = [
+	    {engine_id, "snmpcl"},
+	    {community, Community},
+	    {version, Version}
+    ] ++
+        case Address of
+            {Host, Port} ->
+                [
+                    {taddress, Host},
+                    {port, Port}
+                ];
+            Host -> [{taddress, Host}]
+        end,
     case snmpm:which_agents(snmpcl_user) of
         [] -> ok;
         _ ->
@@ -49,6 +52,5 @@ walk(Version, Address, Community, Oid) ->
             [{_, Oid, Type, Value, _}] = Result,
             {Oid, Type, Value};
         {error, Reason} ->
-            error_logger:error_msg("Can't send request to ~s due to ~p~n",
-                [Address, Reason])
+            error_logger:error_msg("Can't send request to ~p due to ~p~n", [Address, Reason])
     end.
