@@ -18,16 +18,16 @@ start(_Type, _Args) ->
 
 stop(_State) -> ok.
 
-walk(Address, Oid) ->
-    walk(v2, Address, "public", Oid).
+walk(Address, BaseOid) ->
+    walk(v2, Address, "public", BaseOid).
     
-b_walk(Hosts, Community, Oid) ->
-	[ walk(H, Community, Oid) || H <- Hosts ].
+b_walk(Hosts, Community, BaseOid) ->
+	[ walk(H, Community, BaseOid) || H <- Hosts ].
 
-walk(Address, Community, Oid) ->
-    walk(v2, Address, Community, Oid).
+walk(Address, Community, BaseOid) ->
+    walk(v2, Address, Community, BaseOid).
 
-walk(Version, Address, Community, Oid) ->
+walk(Version, Address, Community, BaseOid) ->
     Options = [
 	    {engine_id, "snmpcl"},
 	    {community, Community},
@@ -48,7 +48,7 @@ walk(Version, Address, Community, Oid) ->
     end,
     snmpm:register_agent(snmpcl_user, "snmpcl_user", Options),
 
-    case snmpm:sync_get(snmpcl_user, "snmpcl_user", [Oid]) of
+    case snmpm:sync_get_next(snmpcl_user, "snmpcl_user", [BaseOid]) of
         {ok,  {_, _, Result}, _Remaining} ->
             [{_, Oid, Type, Value, _}] = Result,
             walk_next(Oid, [{Oid, Type, Value}]);
@@ -56,18 +56,16 @@ walk(Version, Address, Community, Oid) ->
             error_logger:error_msg("Can't send request to ~p due to ~p~n", [Address, Reason])
     end.
 
-walk_next(Oid, Acc) ->
-    walk_next(Oid, lists:nth(length(Oid) - 1, Oid), Acc).
+walk_next(BaseOid, Acc) ->
+    walk_next(lists:droplast(BaseOid), lists:last(BaseOid), Acc).
 
 walk_next(BaseOid, Index, Acc) ->
-    case snmpm:sync_get_next(snmpcl_user, "snmpcl_user", [BaseOid]) of
+    case snmpm:sync_get_next(snmpcl_user, "snmpcl_user", [BaseOid ++ [Index]]) of
         {ok,  {_, _, Result}, _Remaining} ->
             [{_, Oid, Type, Value, _}] = Result,
-            case lists:nth(length(Oid) - 1, Oid) =:= Index of
-                true ->
-                    walk_next(Oid, Index, [{Oid, Type, Value} | Acc]);
-                false ->
-                    Acc
+            case lists:droplast(Oid) of
+                BaseOid -> walk_next(BaseOid, lists:last(Oid), [{Oid, Type, Value} | Acc]);
+                _ -> Acc
             end;
         {error, Reason} ->
             error_logger:error_msg("Can't send request, reason: ~p~n", [Reason])
